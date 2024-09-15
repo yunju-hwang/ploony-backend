@@ -1,0 +1,40 @@
+GET http://localhost:3000/plants
+
+###
+
+GET http://localhost:3000/plants/1
+
+###
+
+POST http://localhost:3000/plants
+Content-Type: application/json
+
+
+
+###
+
+PATCH  http://localhost:3000/plants/1
+Content-Type: application/json
+
+{
+  "name": "A",
+  "species": "A",
+  "startDate": "2023-01-25",
+  "photoUrl": "http://example.com/aloe-ver.jpg"
+}
+
+###
+
+
+PATCH http://localhost:3000/plants/2/sensor-data
+Content-Type: application/json
+
+
+{
+  "temperature": 20,
+  "humidity": 35,
+  "light": 800
+}
+
+
+
