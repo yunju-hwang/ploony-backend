@@ -1,6 +1,6 @@
 const data = [
   {
-    id: 1,
+   
     name: "Aloe Vera",
     species: "Aloe",
     startDate: "2023-01-15T00:00:00.000Z",
@@ -11,7 +11,7 @@ const data = [
   },
 
   {
-    id: 2,
+   
     name: "Test",
     species: "test species",
     startDate: "2023-01-15T00:00:00.000Z",
