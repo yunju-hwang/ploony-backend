@@ -38,3 +38,5 @@ Content-Type: application/json
 
 
 
+###
+DELETE  http://localhost:3000/plants/2

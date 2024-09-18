@@ -1,5 +1,9 @@
+import mongoose from "mongoose";
+import { DATABASE_URL } from "./env.js";
 import express from "express";
 import plants from "./data/mock.js";
+
+mongoose.connect(DATABASE_URL).then(() => console.log('Connected to DB'));
 
 const app = express();
 app.use(express.json());
@@ -60,6 +64,18 @@ app.patch("/plants/:id/sensor-data", (req, res) => {
       plant[key] = req.body[key];
     });
     res.send(plant);
+  } else {
+    res.status(404).send({ message: "Cannot find given id" });
+  }
+});
+
+//식물 삭제
+app.delete("/plants/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const idx = plants.findIndex((plant) => plant.id === id);
+  if (idx >= 0) {
+    plants.splice(idx, 1);
+    res.sendStatus(204);
   } else {
     res.status(404).send({ message: "Cannot find given id" });
   }
