@@ -3,10 +3,13 @@ import mongoose from "mongoose";
 const PlantSchema = new mongoose.Schema({
   name: {
     type: String,
+    required: true,
+    maxLength: 30
   },
 
   species: {
     type: String,
+    required: true
   },
 
   startDate: {
@@ -19,14 +22,17 @@ const PlantSchema = new mongoose.Schema({
 
   temperature: {
     type: Number,
+    default: null
   },
 
   humidity: {
     type: Number,
+    default: null
   },
 
   light: {
     type: Number,
+    default: null
   },
 });
 

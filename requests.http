@@ -2,18 +2,23 @@ GET http://localhost:3000/plants
 
 ###
 
-GET http://localhost:3000/plants/1
+GET http://localhost:3000/plants/66ea97fb641e49e0fe631a70
 
 ###
 
 POST http://localhost:3000/plants
 Content-Type: application/json
 
-
+{
+  "name": "Toma",
+  "species": "Tomato",
+  "startDate": "2023-01-25",
+  "photoUrl": "http://example.com/aloe-ver.jpg"
+}
 
 ###
 
-PATCH  http://localhost:3000/plants/1
+PATCH  http://localhost:3000/plants/66ea97fb641e49e0fe631a70
 Content-Type: application/json
 
 {
@@ -26,7 +31,7 @@ Content-Type: application/json
 ###
 
 
-PATCH http://localhost:3000/plants/2/sensor-data
+PATCH http://localhost:3000/plants/66ea97fb641e49e0fe631a70/sensor-data
 Content-Type: application/json
 
 
@@ -39,4 +44,4 @@ Content-Type: application/json
 
 
 ###
-DELETE  http://localhost:3000/plants/2
+DELETE  http://localhost:3000/plants/66ea97fb641e49e0fe631a70
