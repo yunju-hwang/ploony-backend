@@ -45,3 +45,8 @@ Content-Type: application/json
 
 ###
 DELETE  http://localhost:3000/plants/66ea97fb641e49e0fe631a70
+
+
+###
+
+POST http://localhost:3000/plants/analyze/66ebdf6c6bf3f36d642db4c6

@@ -3,8 +3,12 @@ import * as dotenv from "dotenv";
 import express from "express";
 import Plant from "./models/Plant.js";
 import cors from 'cors';
+import { analyzePlantData } from "./openai.js";
+
 
 dotenv.config({ path: "./app.env" });
+
+
 
 mongoose
   .connect(process.env.DATABASE_URL)
@@ -117,4 +121,25 @@ app.delete(
   })
 );
 
-app.listen(process.env.PORT || 10000, () => console.log("Server Started"));
+// 식물 데이터를 분석하는 API 엔드포인트
+app.post(
+    "/plants/analyze/:id",
+    asyncHandler(async (req, res) => {
+      const plantId = req.params.id;
+      const plant = await Plant.findById(plantId);
+      
+      if (plant) {
+        // 분석 로직 호출 (OpenAI API 등을 사용할 수 있음)
+        const analysis = await analyzePlantData(plant);
+  
+        res.status(200).send({
+          message: "Plant analysis completed",
+          analysis,
+        });
+      } else {
+        res.status(404).send({ message: "Cannot find plant with the given ID" });
+      }
+    })
+  );
+
+app.listen(process.env.PORT || 3000, () => console.log("Server Started"));
