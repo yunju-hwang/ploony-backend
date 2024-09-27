@@ -62,7 +62,7 @@ app.get(
   })
 );
 
-//식물 생성
+//식물 생성 (프론트)
 app.post(
   "/plants",
   asyncHandler(async (req, res) => {
@@ -70,6 +70,19 @@ app.post(
     res.status(201).send(newPlant);
   })
 );
+
+// 식물 등록 API (아두이노)
+app.post(
+    "/plants/register",
+    asyncHandler(async (req, res) => {
+      const newPlant = await Plant.create(req.body);
+      res.status(201).send({
+        message: "Plant registered successfully",
+        plantId: newPlant._id, // 식물의 ID를 함께 반환
+      });
+    })
+  );
+  
 
 //사용자 식물 정보 수정
 app.patch(
@@ -89,23 +102,25 @@ app.patch(
   })
 );
 
-//아두이노로부터 식물 정보 업데이트  (나중에 수정 필요)
-app.patch(
-  "/plants/:id/sensor-data",
-  asyncHandler(async (req, res) => {
+
+
+//Sensor data update API
+app.patch("/plants/:id/sensor-data", asyncHandler(async (req, res) => {
     const id = req.params.id;
-    const plant = await Plant.findById(id);
-    if (plant) {
-      Object.keys(req.body).forEach((key) => {
-        plant[key] = req.body[key];
-      });
+    const { temperature, humidity, light } = req.body;
+  
+    try {
+      const plant = await Plant.findById(id); // 해당 식물 찾기 (단일 식물 관리 시)
+      plant.temperature = temperature;
+      plant.humidity = humidity;
+      plant.light = light;
+      
       await plant.save();
-      res.send(plant);
-    } else {
-      res.status(404).send({ message: "Cannot find given id" });
+      res.status(200).send({ message: "Sensor data updated successfully" });
+    } catch (error) {
+      res.status(500).send({ message: error.message });
     }
-  })
-);
+}));
 
 //식물 삭제
 app.delete(
