@@ -18,6 +18,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+let recentPlantId = null; // 최근 생성된 식물 ID를 저장할 변수
+
 //비동기 오류 처리
 function asyncHandler(handler) {
   return async function (req, res) {
@@ -67,24 +69,32 @@ app.post(
   "/plants",
   asyncHandler(async (req, res) => {
     const newPlant = await Plant.create(req.body);
+     // 최근 생성된 식물의 ID를 저장
+     recentPlantId = newPlant._id;
     res.status(201).send(newPlant);
   })
 );
 
-// 식물 등록 API (아두이노)
-app.post(
-    "/plants/register",
+// 아두이노에서 최근 생성된 식물 ID 요청
+app.get(
+    "/plants/recent",
     asyncHandler(async (req, res) => {
-      const newPlant = await Plant.create(req.body);
-      res.status(201).send({
-        message: "Plant registered successfully",
-        plantId: newPlant._id, // 식물의 ID를 함께 반환
-      });
+      if (recentPlantId) {
+        // 최근 생성된 ID가 있으면 그 값을 반환
+        res.status(200).send({
+          plantId: recentPlantId,
+        });
+      } else {
+        // 최근 생성된 ID가 없을 경우 처리
+        res.status(404).send({
+          message: "No recently created plant found",
+        });
+      }
     })
   );
   
 
-//사용자 식물 정보 수정
+//사용자 식물 정보 수정 (프론트)
 app.patch(
   "/plants/:id",
   asyncHandler(async (req, res) => {
