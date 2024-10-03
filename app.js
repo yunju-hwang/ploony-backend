@@ -117,13 +117,14 @@ app.patch(
   "/plants/:id/sensor-data",
   asyncHandler(async (req, res) => {
     const id = req.params.id;
-    const { temperature, humidity, light } = req.body;
+    const { temperature, humidity, light, soilMoisture } = req.body;
 
     try {
       const plant = await Plant.findById(id); // 해당 식물 찾기 (단일 식물 관리 시)
       plant.temperature = temperature;
       plant.humidity = humidity;
       plant.light = light;
+      plant.soilMoisture = soilMoisture;
 
       await plant.save();
       res.status(200).send({ message: "Sensor data updated successfully" });
