@@ -34,6 +34,11 @@ const PlantSchema = new mongoose.Schema({
     type: Number,
     default: null
   },
+  soilMoisture: {
+    type: Number,
+    default: null
+  }
+  
 });
 
 const Plant = mongoose.model("Plant", PlantSchema);
