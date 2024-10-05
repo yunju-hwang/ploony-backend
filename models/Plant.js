@@ -4,12 +4,12 @@ const PlantSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    maxLength: 30
+    maxLength: 30,
   },
 
   species: {
     type: String,
-    required: true
+    required: true,
   },
 
   startDate: {
@@ -22,23 +22,23 @@ const PlantSchema = new mongoose.Schema({
 
   temperature: {
     type: Number,
-    default: null
+    default: null,
   },
 
   humidity: {
     type: Number,
-    default: null
+    default: null,
   },
 
   light: {
     type: Number,
-    default: null
+    default: null,
   },
   soilMoisture: {
     type: Number,
-    default: null
-  }
-  
+    default: null,
+  },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // 유저와 연결
 });
 
 const Plant = mongoose.model("Plant", PlantSchema);

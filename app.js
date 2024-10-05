@@ -1,3 +1,4 @@
+import axios from 'axios';  
 import mongoose from "mongoose";
 import * as dotenv from "dotenv";
 import express from "express";
@@ -33,19 +34,61 @@ function asyncHandler(handler) {
     };
   }
   
-
-//식물 전체 리스트 조회
-app.get(
-  "/plants",
-  asyncHandler(async (req, res) => {
-    const plants = await Plant.find();
-    if (plants) {
-      res.send(plants);
-    } else {
-      res.status(404).send({ message: "Cannot find plants information" });
+// Kakao 로그인 처리 엔드포인트 추가
+app.post("/auth/kakao", asyncHandler(async (req, res) => {
+    const { accessToken } = req.body;  // 클라이언트에서 전송한 액세스 토큰을 받음
+  
+    if (!accessToken) {
+      return res.status(400).json({ message: "Access token is required" });
     }
-  })
-);
+  
+    try {
+      // Kakao API를 사용해 사용자 정보를 가져옴
+      const response = await axios.get("https://kapi.kakao.com/v2/user/me", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`  // Bearer 토큰 방식으로 Kakao API 호출
+        }
+      });
+  
+      const kakaoProfile = response.data;  // 카카오에서 반환된 사용자 정보
+  
+      // 필요한 사용자 정보를 추출 (예: 카카오 고유 ID, 이메일, 닉네임 등)
+      const kakaoId = kakaoProfile.id;
+      const email = kakaoProfile.kakao_account.email;
+      const nickname = kakaoProfile.properties.nickname;
+  
+      // 사용자 정보 저장 (이미 존재하는지 확인한 후 없으면 저장)
+      let user = await User.findOne({ kakaoId });  // MongoDB에서 kakaoId로 사용자를 찾음
+      if (!user) {
+        user = new User({
+          kakaoId,
+          email,
+          nickname,
+        });
+        await user.save();  // 새 사용자 저장
+      }
+  
+      res.status(200).json({
+        message: "User authenticated successfully",
+        user,
+      });
+    } catch (error) {
+      console.error("Kakao API error:", error.response?.data || error.message);
+      res.status(500).json({ message: "Failed to authenticate with Kakao" });
+    }
+  }));
+
+// 유저의 모든 식물 조회
+app.get("/users/:userId/plants", asyncHandler(async (req, res) => {
+    const userId = req.params.userId;
+    const user = await User.findById(userId).populate("plants");
+  
+    if (user) {
+      res.send(user.plants);
+    } else {
+      res.status(404).send({ message: "User not found" });
+    }
+  }));
 
 //식물 상세 정보 조회
 app.get(
@@ -61,14 +104,19 @@ app.get(
   })
 );
 
-//식물 생성 (프론트)
-app.post(
-  "/plants",
-  asyncHandler(async (req, res) => {
-    const newPlant = await Plant.create(req.body);
+// 식물 생성 API (유저 연동)
+app.post("/users/:userId/plants", asyncHandler(async (req, res) => {
+    const userId = req.params.userId;
+    const newPlant = await Plant.create({ ...req.body, user: userId });
+    
+    // 유저의 plants 필드에 새 식물 추가
+    const user = await User.findById(userId);
+    user.plants.push(newPlant._id);
+    await user.save();
+  
     res.status(201).send(newPlant);
-  })
-);
+  }));
+  
 
 app.get("/recent/plants", asyncHandler(async (req, res) => {
     try {
