@@ -54,7 +54,6 @@ app.post("/auth/kakao", asyncHandler(async (req, res) => {
   
       // 필요한 사용자 정보를 추출 (예: 카카오 고유 ID, 이메일, 닉네임 등)
       const kakaoId = kakaoProfile.id;
-      const email = kakaoProfile.kakao_account.email;
       const nickname = kakaoProfile.properties.nickname;
   
       // 사용자 정보 저장 (이미 존재하는지 확인한 후 없으면 저장)
@@ -62,7 +61,6 @@ app.post("/auth/kakao", asyncHandler(async (req, res) => {
       if (!user) {
         user = new User({
           kakaoId,
-          email,
           nickname,
         });
         await user.save();  // 새 사용자 저장
@@ -118,6 +116,7 @@ app.post("/users/:userId/plants", asyncHandler(async (req, res) => {
   }));
   
 
+//아두이노에게 최신 id값 전달해주기 (처음 시작할 때 일회성 코드)
 app.get("/recent/plants", asyncHandler(async (req, res) => {
     try {
       const recentPlant = await Plant.findOne().sort({ _id: -1 });
