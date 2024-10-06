@@ -52,7 +52,7 @@ app.post("/auth/kakao", asyncHandler(async (req, res) => {
   
       const kakaoProfile = response.data;  // 카카오에서 반환된 사용자 정보
   
-      // 필요한 사용자 정보를 추출 (예: 카카오 고유 ID, 이메일, 닉네임 등)
+      // 필요한 사용자 정보를 추출 (예: 카카오 고유 ID, 닉네임 등)
       const kakaoId = kakaoProfile.id;
       const nickname = kakaoProfile.properties.nickname;
   
@@ -66,15 +66,21 @@ app.post("/auth/kakao", asyncHandler(async (req, res) => {
         await user.save();  // 새 사용자 저장
       }
   
+      // MongoDB _id와 함께 사용자 정보를 반환
       res.status(200).json({
         message: "User authenticated successfully",
-        user,
+        user: {
+          _id: user._id,  // MongoDB의 _id 반환
+          kakaoId: user.kakaoId,
+          nickname: user.nickname,
+        }
       });
     } catch (error) {
       console.error("Kakao API error:", error.response?.data || error.message);
       res.status(500).json({ message: "Failed to authenticate with Kakao" });
     }
   }));
+  
 
 // 유저의 모든 식물 조회
 app.get("/users/:userId/plants", asyncHandler(async (req, res) => {
