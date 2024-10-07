@@ -5,6 +5,7 @@ import express from "express";
 import Plant from "./models/Plant.js";
 import cors from "cors";
 import { analyzePlantData } from "./openai.js";
+import User from './models/User.js';
 
 dotenv.config({ path: "./app.env" });
 
