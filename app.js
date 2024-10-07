@@ -84,16 +84,21 @@ app.post("/auth/kakao", asyncHandler(async (req, res) => {
   
 
 // 유저의 모든 식물 조회
-app.get("/users/:userId/plants", asyncHandler(async (req, res) => {
-    const userId = req.params.userId;
-    const user = await User.findById(userId).populate("plants");
+app.get(
+    "/users/:userId/plants",
+    asyncHandler(async (req, res) => {
+      const userId = req.params.userId;
   
-    if (user) {
-      res.send(user.plants);
-    } else {
-      res.status(404).send({ message: "User not found" });
-    }
-  }));
+      // 유저와 그 유저가 가진 모든 식물을 조회 (populate를 사용하여 연결된 식물 정보 포함)
+      const user = await User.findById(userId).populate("plants");
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      res.json(user.plants);
+    })
+  );
+  
 
 //식물 상세 정보 조회
 app.get(
@@ -109,18 +114,39 @@ app.get(
   })
 );
 
-// 식물 생성 API (유저 연동)
-app.post("/users/:userId/plants", asyncHandler(async (req, res) => {
-    const userId = req.params.userId;
-    const newPlant = await Plant.create({ ...req.body, user: userId });
-    
-    // 유저의 plants 필드에 새 식물 추가
-    const user = await User.findById(userId);
-    user.plants.push(newPlant._id);
-    await user.save();
+//식물 생성
+app.post(
+    "/users/:userId/plants",
+    asyncHandler(async (req, res) => {
+      const userId = req.params.userId;
+      const { name, species, temperature, humidity, light } = req.body;
   
-    res.status(201).send(newPlant);
-  }));
+      // 유저를 찾아서 확인
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      // 새로운 식물 생성
+      const plant = new Plant({
+        name,
+        species,
+        temperature,
+        humidity,
+        light,
+        owner: user._id  // 해당 식물의 소유자 설정
+      });
+  
+      // 식물 저장
+      const savedPlant = await plant.save();
+  
+      // 유저의 식물 목록에 추가
+      user.plants.push(savedPlant._id);
+      await user.save();
+  
+      res.status(201).json({ message: "Plant created successfully", plant: savedPlant });
+    })
+  );
   
 
 //아두이노에게 최신 id값 전달해주기 (처음 시작할 때 일회성 코드)
