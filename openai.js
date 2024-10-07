@@ -15,7 +15,7 @@ export async function analyzePlantData(plant) {
       messages: [
         { role: "user", content: prompt }, // 사용자 메시지를 messages 배열에 추가
       ],
-      max_tokens: 100,
+      max_tokens: 150,
     });
 
     const answer = response.choices[0].message.content;
