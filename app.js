@@ -219,7 +219,7 @@ app.delete(
   "/plants/:id",
   asyncHandler(async (req, res) => {
     const id = req.params.id;
-    const plant = await Plant.findOneAndDelete(id);
+    const plant = await Plant.findByIdAndDelete(id);
     if (plant) {
       res.sendStatus(204);
     } else {
