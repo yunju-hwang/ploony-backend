@@ -14,10 +14,12 @@ const PlantSchema = new mongoose.Schema({
 
   startDate: {
     type: Date,
+    default: Date.now,
   },
 
   photoUrl: {
     type: String,
+    default: "https://via.placeholder.com/150/FFFFFF/FFFFFF?text=No+Image",
   },
 
   temperature: {
