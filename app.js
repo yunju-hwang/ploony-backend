@@ -119,7 +119,7 @@ app.post(
     "/users/:userId/plants",
     asyncHandler(async (req, res) => {
       const userId = req.params.userId;
-      const { name, species, temperature, humidity, light } = req.body;
+      const { name, species, temperature, humidity, light, photoUrl ,startDate } = req.body;
   
       // 유저를 찾아서 확인
       const user = await User.findById(userId);
@@ -134,6 +134,8 @@ app.post(
         temperature,
         humidity,
         light,
+        startDate,
+        photoUrl,
         owner: user._id  // 해당 식물의 소유자 설정
       });
   
